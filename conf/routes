@@ -1,0 +1,16 @@
+# Routes
+# This file defines all application routes
+
+# Home page
+GET     /                       controllers.ApplicationController.index
+
+# These routes are basic operations on Customer data
+GET     /area                   controllers.ApplicationController.findNeighbourhood
+GET     /restaurants            controllers.ApplicationController.findAllRestaurants
+GET     /restaurantsWithin      controllers.ApplicationController.findRestaurantsWithinDistance
+#GET     /restaurantsSorted      controllers.ApplicationController.findRestaurantsSorted
+
+# Map static resources from the /public folder to the /assets URL path
+GET     /assets/*file           controllers.Assets.versioned(path="/public", file: Asset)
+
+GET     /jsRoutes               controllers.ApplicationController.jsRoutes

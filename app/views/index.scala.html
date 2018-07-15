@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Maps</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+        <script id="sap-ui-bootstrap"
+                type="text/javascript"
+                src="https://sapui5.netweaver.ondemand.com/resources/sap-ui-core.js"
+                data-sap-ui-language="en_US"
+                type="text/javascript"
+                data-sap-ui-libs="sap.m,sap.makit"
+                data-sap-ui-theme="sap_mvi"
+                data-sap-ui-resourceroots='{"view": "@routes.Assets.versioned("views")"}'>
+        </script>
+        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD_H6hUpE6gFN7D-brv2m6rM2jO6DPzpe0&sensor=false"
+                type ="text/javascript"></script>
+        <script type="text/javascript" src="@routes.Assets.versioned("javascripts/app.js")" ></script>
+        <script type="text/javascript" src="@routes.ApplicationController.jsRoutes"></script>
+        <style>
+            .myMap {
+                height: 100%;
+                width: 100%
+            }
+        </style>
+    </head>
+    <body class="sapUiBody">
+      <div id="content"></div>
+    </body>
+</html>

@@ -1,0 +1,120 @@
+var latitude, longitude;
+var gmarkers = [];
+var error = function(err) {
+   console.debug("Error in ajax Call");
+   console.debug(err);
+}
+
+sap.ui.controller("view.mainView", {
+    onInit: function () {
+        this.getView().byId("map_canvas").addStyleClass("myMap");
+    },
+    onAfterRendering: function () {
+        var latLng = new google.maps.LatLng(40.823, -73.934) // (latitude, longitude)
+        if (!this.initialized) {
+            this.initialized = true;
+//            this.geocoder = new google.maps.Geocoder();
+            var mapOptions = {
+                center: latLng,
+                zoom: 14,
+                mapTypeId: google.maps.MapTypeId.ROADMAP
+            };
+            this.map = new google.maps.Map(this.getView().byId("map_canvas").getDomRef(),
+                mapOptions);
+
+            google.maps.event.addListener(this.map, 'click', function(event) {
+               placeMarker(event.latLng);
+               latitude = event.latLng.lat();
+               longitude = event.latLng.lng();
+               console.log( latitude + ', ' + longitude );
+               for(i in gmarkers){
+                   gmarkers[i].setMap(null);
+               }
+            });
+
+            function placeMarker(location) {
+                var marker = new google.maps.Marker({
+                    position: location,
+                    map: this.map
+                });
+                gmarkers.push(marker);
+            }
+        }
+    },
+    findAll: function () {
+        var map = this.map;
+
+            if (!(latitude == null) && !(longitude == null) ) {
+                map.setCenter({lat: latitude, lng: longitude});
+                var marker = new google.maps.Marker({
+                    map: map,
+                    position: {lat: latitude, lng: longitude},
+                    icon: 'http://maps.google.com/mapfiles/ms/icons/green-dot.png'
+                });
+//
+                var r = jsRoutes.controllers.ApplicationController.findAllRestaurants()
+                $.ajax({
+                    url: r.url + "?" + "longitude=" + longitude + "&" + "latitude=" + latitude,
+                    type: r.type,
+                    success: function(data){
+                                var infowindow = new google.maps.InfoWindow({});
+                                for(i in data){
+                                   var marker = new google.maps.Marker({
+                                   position: new google.maps.LatLng(data[i].location.coordinates[1], data[i].location.coordinates[0]),
+                                   map: map
+                                   });
+                                   gmarkers.push(marker);
+                                   google.maps.event.addListener(marker, 'click', (function (marker, i) {
+                                      return function () {
+                                         infowindow.setContent(data[i].name);
+                                         infowindow.open(map, marker);
+                                     }
+                                   })(marker, i));
+                                }
+                             },
+                    error: error
+                });
+
+               } else {
+                alert('Please provide your correct position, Latitude and longitude coordinates are empty');
+            }
+    },
+    findSome: function () {
+            var map = this.map;
+            var maxDistance = this.getView().byId("inpDistance").getValue();
+                if (!(latitude == null) && !(longitude == null) && !(isNaN(maxDistance)) && (maxDistance > 0)) {
+                    map.setCenter({lat: latitude, lng: longitude});
+                    var marker = new google.maps.Marker({
+                        map: map,
+                        position: {lat: latitude, lng: longitude},
+                        icon: 'http://maps.google.com/mapfiles/ms/icons/green-dot.png'
+                    });
+    //
+                    var r = jsRoutes.controllers.ApplicationController.findRestaurantsWithinDistance()
+                    $.ajax({
+                        url: r.url + "?" + "longitude=" + longitude + "&" + "latitude=" + latitude + "&" + "distance=" + maxDistance,
+                        type: r.type,
+                        success: function(data){
+                                    var infowindow = new google.maps.InfoWindow({});
+                                    for(i in data){
+                                       var marker = new google.maps.Marker({
+                                       position: new google.maps.LatLng(data[i].location.coordinates[1], data[i].location.coordinates[0]),
+                                       map: map
+                                       });
+                                       gmarkers.push(marker);
+                                       google.maps.event.addListener(marker, 'click', (function (marker, i) {
+                                          return function () {
+                                             infowindow.setContent(data[i].name);
+                                             infowindow.open(map, marker);
+                                         }
+                                       })(marker, i));
+                                    }
+                                 },
+                        error: error
+                    });
+
+                   } else {
+                    alert('Please provide valid maximum distance along with your position');
+                }
+        }
+});
